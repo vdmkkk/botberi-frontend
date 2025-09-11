@@ -3,8 +3,8 @@ import { defineBoot } from '#q-app/wrappers';
 import axios, { type AxiosInstance } from 'axios';
 import { AuthApi, Configuration, BotsApi, InstancesApi, UsersApi } from 'src/api';
 import { PaymentApi } from 'src/api';
-import Cookies from 'js-cookie';
 import { Notify } from 'quasar';
+import { Cookies } from 'quasar';
 declare module 'vue' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -18,6 +18,12 @@ declare module 'vue' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
+
+const COOKIE_OPTS: Parameters<typeof Cookies.set>[2] = {
+  path: '/',
+  sameSite: 'lax',
+  // secure: true, // uncomment in HTTPS/prod
+};
 
 const config = new Configuration({
   basePath: import.meta.env.VITE_APP_API_BASE_URL,
