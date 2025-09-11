@@ -1,11 +1,11 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import pluginVue from 'eslint-plugin-vue';
-import pluginQuasar from '@quasar/app-vite/eslint';
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
-import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
+import js from '@eslint/js'
+import globals from 'globals'
+import pluginVue from 'eslint-plugin-vue'
+import pluginQuasar from '@quasar/app-vite/eslint'
+import vueTsEslintConfig from '@vue/eslint-config-typescript'
+import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
-export default defineConfigWithVueTs(
+export default [
   {
     /**
      * Ignore the following files.
@@ -18,7 +18,7 @@ export default defineConfigWithVueTs(
     // ignores: []
   },
 
-  pluginQuasar.configs.recommended(),
+  ...pluginQuasar.configs.recommended(),
   js.configs.recommended,
 
   /**
@@ -33,16 +33,35 @@ export default defineConfigWithVueTs(
    * pluginVue.configs["flat/recommended"]
    *   -> Above, plus rules to enforce subjective community defaults to ensure consistency.
    */
-  pluginVue.configs['flat/essential'],
+  ...pluginVue.configs['flat/essential'],
 
   {
     files: ['**/*.ts', '**/*.vue'],
     rules: {
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/ban-ts-comment': [
+        'warn', // or 'off' to disable warnings/errors
+        {
+          'ts-nocheck': false, // Allow the use of @ts-nocheck
+        },
+      ],
     },
   },
   // https://github.com/vuejs/eslint-config-typescript
-  vueTsConfigs.recommendedTypeChecked,
+  ...vueTsEslintConfig({
+    // Optional: extend additional configurations from typescript-eslint'.
+    // Supports all the configurations in
+    // https://typescript-eslint.io/users/configs#recommended-configurations
+    extends: [
+      // By default, only the 'recommendedTypeChecked' rules are enabled.
+      'recommendedTypeChecked',
+      // You can also manually enable the stylistic rules.
+      // "stylistic",
+
+      // Other utility configurations, such as 'eslintRecommended', (note that it's in camelCase)
+      // are also extendable here. But we don't recommend using them directly.
+    ],
+  }),
 
   {
     languageOptions: {
@@ -80,4 +99,4 @@ export default defineConfigWithVueTs(
   },
 
   prettierSkipFormatting,
-);
+]
