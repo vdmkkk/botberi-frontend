@@ -1,0 +1,40 @@
+<template>
+  <q-btn
+    :label="label"
+    flat
+    no-caps
+    class="fancy-btn"
+    style="align-self: center"
+    @click="emits('click')"
+  >
+    <slot />
+  </q-btn>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  label: string;
+}>();
+
+const emits = defineEmits(['click']);
+</script>
+
+<style lang="scss" scoped>
+.fancy-btn {
+  color: $font;
+  width: fit-content;
+  border-radius: 10px;
+  border: 1px solid $primary !important;
+
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  width: var(--spacing-xl) !important;
+}
+
+@media screen and (max-width: 576px) {
+  .fancy-btn {
+    font-size: var(--font-size-sm);
+    width: calc(var(--spacing-xl) + var(--spacing-md)) !important;
+  }
+}
+</style>

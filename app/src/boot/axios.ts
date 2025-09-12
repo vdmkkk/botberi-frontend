@@ -97,32 +97,88 @@ Object.entries(apiInstances).forEach(([key, apiInstance]) => {
     // бля метод protected один хуй работает. Люблю TS
     (response) => response,
     async (error) => {
-      if (error.response.status == 401) {
-        if (error.response?.status === 401) {
-          const originalRequest = error.config || {};
-          // Avoid loops: don't try to refresh if the failing call *is* an auth endpoint
-          const url = (originalRequest.url || '').toString();
-          const isAuthPath =
-            url.includes('/auth/login') ||
-            url.includes('/auth/register') ||
-            url.includes('/auth/verify') ||
-            url.includes('/auth/forgot-password') ||
-            url.includes('/auth/reset-password') ||
-            url.includes('/auth/change-password') ||
-            url.includes('/auth/refresh');
+      if (error.status == 401) {
+        const originalRequest = error.config || {};
+        // Avoid loops: don't try to refresh if the failing call *is* an auth endpoint
+        const url = (originalRequest.url || '').toString();
+        const isAuthPath =
+          url.includes('/auth/login') ||
+          url.includes('/auth/register') ||
+          url.includes('/auth/verify') ||
+          url.includes('/auth/forgot-password') ||
+          url.includes('/auth/reset-password') ||
+          url.includes('/auth/change-password') ||
+          url.includes('/auth/refresh');
 
-          // Mark to avoid retry loops
-          if ((originalRequest as any)._retry) {
-            // already retried once; bail
-            clearTokens();
-            return Promise.reject(error);
-          }
-          (originalRequest as any)._retry = true;
+        // Mark to avoid retry loops
+        if ((originalRequest as any)._retry) {
+          // already retried once; bail
+          clearTokens();
+          return Promise.reject(error);
+        }
+        (originalRequest as any)._retry = true;
 
-          // If it's an auth call itself, or we have no refresh token, just clear & fail
-          const { refresh } = getTokens();
-          if (isAuthPath || !refresh) {
+        // If it's an auth call itself, or we have no refresh token, just clear & fail
+        const { refresh } = getTokens();
+        if (isAuthPath || !refresh) {
+          clearTokens();
+          Notify.create({
+            type: 'warning',
+            position: 'top',
+            message: 'Сессия истекла. Войдите снова.',
+            timeout: 5000,
+            badgeStyle: { display: 'none' },
+          });
+          return Promise.reject(error);
+        }
+
+        // Queue while a refresh is in flight
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            subscribePending(({ session, refresh }) => {
+              // retry original request with new tokens
+              originalRequest.headers = originalRequest.headers || {};
+              (originalRequest.headers as any)['X-Session-Token'] = session;
+              (originalRequest.headers as any)['X-Refresh-Token'] = refresh;
+
+              // Use the same axios instance to preserve baseURL etc.
+              (apiInstance.axios as AxiosInstance)
+                .request(originalRequest)
+                .then(resolve)
+                .catch(reject);
+            });
+          });
+        }
+
+        // Do the refresh (single-flight)
+        isRefreshing = true;
+        refreshPromise = doRefresh()
+          .then(() => {
+            const tokens = getTokens(); // now updated
+            resolvePending(tokens);
+          })
+          .catch((e) => {
             clearTokens();
+            // wake all pending with failure
+            resolvePending({ session: '', refresh: '' });
+            throw e;
+          })
+          .finally(() => {
+            isRefreshing = false;
+            refreshPromise = null;
+          });
+
+        // Once refreshed, retry the original request
+        return refreshPromise
+          .then(() => {
+            const tokens = getTokens();
+            originalRequest.headers = originalRequest.headers || {};
+            (originalRequest.headers as any)['X-Session-Token'] = tokens.session;
+            (originalRequest.headers as any)['X-Refresh-Token'] = tokens.refresh;
+
+            return (apiInstance.axios as AxiosInstance).request(originalRequest);
+          })
+          .catch((e) => {
             Notify.create({
               type: 'warning',
               position: 'top',
@@ -130,73 +186,19 @@ Object.entries(apiInstances).forEach(([key, apiInstance]) => {
               timeout: 5000,
               badgeStyle: { display: 'none' },
             });
-            return Promise.reject(error);
-          }
-
-          // Queue while a refresh is in flight
-          if (isRefreshing) {
-            return new Promise((resolve, reject) => {
-              subscribePending(({ session, refresh }) => {
-                // retry original request with new tokens
-                originalRequest.headers = originalRequest.headers || {};
-                (originalRequest.headers as any)['X-Session-Token'] = session;
-                (originalRequest.headers as any)['X-Refresh-Token'] = refresh;
-
-                // Use the same axios instance to preserve baseURL etc.
-                (apiInstance.axios as AxiosInstance)
-                  .request(originalRequest)
-                  .then(resolve)
-                  .catch(reject);
-              });
-            });
-          }
-
-          // Do the refresh (single-flight)
-          isRefreshing = true;
-          refreshPromise = doRefresh()
-            .then(() => {
-              const tokens = getTokens(); // now updated
-              resolvePending(tokens);
-            })
-            .catch((e) => {
-              clearTokens();
-              // wake all pending with failure
-              resolvePending({ session: '', refresh: '' });
-              throw e;
-            })
-            .finally(() => {
-              isRefreshing = false;
-              refreshPromise = null;
-            });
-
-          // Once refreshed, retry the original request
-          return refreshPromise
-            .then(() => {
-              const tokens = getTokens();
-              originalRequest.headers = originalRequest.headers || {};
-              (originalRequest.headers as any)['X-Session-Token'] = tokens.session;
-              (originalRequest.headers as any)['X-Refresh-Token'] = tokens.refresh;
-
-              return (apiInstance.axios as AxiosInstance).request(originalRequest);
-            })
-            .catch((e) => {
-              Notify.create({
-                type: 'warning',
-                position: 'top',
-                message: 'Сессия истекла. Войдите снова.',
-                timeout: 5000,
-                badgeStyle: { display: 'none' },
-              });
-              return Promise.reject(e);
-            });
-        }
+            return Promise.reject(e);
+          });
       } else if (error.response) {
+        console.log(error.response);
         Notify.create({
           type: 'negative',
           position: 'top',
           timeout: 5000,
           badgeStyle: { display: 'none' },
-          message: error.response.data.user_message || 'Что-то пошло не так',
+          message:
+            error.response.data.detail[0].msg ||
+            error.response.data.detail ||
+            'Что-то пошло не так',
         });
       }
 

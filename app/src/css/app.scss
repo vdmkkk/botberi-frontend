@@ -1,1 +1,24 @@
 // app global css in SCSS form
+.q-tooltip {
+  width: 200px;
+  a {
+    font-size: var(--font-size-sm);
+  }
+}
+
+.container {
+  .loading {
+    position: absolute;
+    left: calc(50vw + 150px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .q-tooltip {
+    a {
+      font-size: var(--font-size-xs);
+    }
+  }
+}

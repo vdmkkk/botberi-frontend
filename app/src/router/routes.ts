@@ -4,7 +4,38 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      { path: '', name: 'main', component: () => import('pages/main/MainPage.vue') },
+      { path: 'bots', name: 'bots', component: () => import('pages/main/BotsPage.vue') },
+      {
+        path: 'instances',
+        name: 'instances',
+        component: () => import('pages/main/InstancesPage.vue'),
+      },
+      { path: 'profile', name: 'profile', component: () => import('pages/main/ProfilePage.vue') },
+    ],
+  },
+  {
+    path: '/auth',
+    component: () => import('layouts/AuthLayout.vue'),
+    children: [
+      { path: '', name: 'login', component: () => import('pages/auth/LoginPage.vue') },
+      {
+        path: 'register',
+        name: 'register',
+        component: () => import('pages/auth/RegisterPage.vue'),
+      },
+      {
+        path: 'change-password',
+        name: 'change-password',
+        component: () => import('pages/auth/ChangePasswordFormPage.vue'),
+      },
+      {
+        path: 'change-password/:access_token',
+        name: 'change-password-confirm',
+        component: () => import('pages/auth/ChangePasswordConfirmPage.vue'),
+      },
+    ],
   },
 
   // Always leave this as last one,
