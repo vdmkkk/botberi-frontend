@@ -222,7 +222,7 @@ watch($eventDialog, ({ type, data, nameDialog }) => {
     confirmId.value == data.data.confirmId
   ) {
     deleteInstanceApi(instance.value!.id).then(() => {
-      router.replace('instances');
+      router.replace('/instances');
     });
   }
 });
