@@ -162,6 +162,98 @@ export interface ChangePasswordIn {
 /**
  * 
  * @export
+ * @enum {string}
+ */
+
+export const ErrorCode = {
+    InternalError: 'internal_error',
+    BadRequest: 'bad_request',
+    ValidationError: 'validation_error',
+    Unauthorized: 'unauthorized',
+    Forbidden: 'forbidden',
+    NotFound: 'not_found',
+    Conflict: 'conflict',
+    RateLimited: 'rate_limited',
+    ServiceUnavailable: 'service_unavailable',
+    Timeout: 'timeout',
+    EmailAlreadyRegistered: 'email_already_registered',
+    PhoneAlreadyRegistered: 'phone_already_registered',
+    InvalidCredentials: 'invalid_credentials',
+    LoginBlocked: 'login_blocked',
+    EmailNotVerified: 'email_not_verified',
+    VerificationCodeInvalid: 'verification_code_invalid',
+    VerificationCodeExpired: 'verification_code_expired',
+    VerificationResendTooSoon: 'verification_resend_too_soon',
+    TokenMissing: 'token_missing',
+    TokenInvalid: 'token_invalid',
+    TokenExpired: 'token_expired',
+    SessionInvalid: 'session_invalid',
+    SessionExpired: 'session_expired',
+    AdminTokenInvalid: 'admin_token_invalid',
+    PasswordTooWeak: 'password_too_weak',
+    PasswordSameAsOld: 'password_same_as_old',
+    PasswordResetInvalid: 'password_reset_invalid',
+    PasswordResetExpired: 'password_reset_expired',
+    PasswordResetUsed: 'password_reset_used',
+    UserNotFound: 'user_not_found',
+    UserUpdateFailed: 'user_update_failed',
+    UserBalanceTooLow: 'user_balance_too_low',
+    BotNotFound: 'bot_not_found',
+    BotAlreadyExists: 'bot_already_exists',
+    BotActivationCodeInvalid: 'bot_activation_code_invalid',
+    BotRateInvalid: 'bot_rate_invalid',
+    BotDeleteForbidden: 'bot_delete_forbidden',
+    InstanceNotFound: 'instance_not_found',
+    InstanceCreationFailed: 'instance_creation_failed',
+    InstanceIdAlreadyExists: 'instance_id_already_exists',
+    InstanceConfigInvalid: 'instance_config_invalid',
+    InstanceAlreadyActive: 'instance_already_active',
+    InstanceAlreadyPaused: 'instance_already_paused',
+    InstanceNotEnoughBalance: 'instance_not_enough_balance',
+    EmailSendFailed: 'email_send_failed',
+    MailTransportUnavailable: 'mail_transport_unavailable',
+    DatabaseError: 'database_error',
+    UniqueConstraintViolation: 'unique_constraint_violation',
+    RedisError: 'redis_error',
+    ExternalApiError: 'external_api_error',
+    ExternalApiTimeout: 'external_api_timeout',
+    ExternalApiUnauthorized: 'external_api_unauthorized',
+    ConfigError: 'config_error'
+} as const;
+
+export type ErrorCode = typeof ErrorCode[keyof typeof ErrorCode];
+
+
+/**
+ * 
+ * @export
+ * @interface ErrorResponse
+ */
+export interface ErrorResponse {
+    /**
+     * 
+     * @type {ErrorCode}
+     * @memberof ErrorResponse
+     */
+    'error_code': ErrorCode;
+    /**
+     * 
+     * @type {string}
+     * @memberof ErrorResponse
+     */
+    'user_message'?: string | null;
+    /**
+     * 
+     * @type {object}
+     * @memberof ErrorResponse
+     */
+    'details'?: object | null;
+}
+
+
+/**
+ * 
+ * @export
  * @interface ForgotPasswordIn
  */
 export interface ForgotPasswordIn {
@@ -210,6 +302,63 @@ export interface InstanceCreate {
      */
     'config'?: object;
 }
+/**
+ * 
+ * @export
+ * @interface InstanceDetailOut
+ */
+export interface InstanceDetailOut {
+    /**
+     * 
+     * @type {number}
+     * @memberof InstanceDetailOut
+     */
+    'id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof InstanceDetailOut
+     */
+    'user_id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof InstanceDetailOut
+     */
+    'bot_id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof InstanceDetailOut
+     */
+    'instance_id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof InstanceDetailOut
+     */
+    'title': string;
+    /**
+     * 
+     * @type {object}
+     * @memberof InstanceDetailOut
+     */
+    'config': object;
+    /**
+     * 
+     * @type {InstanceStatus}
+     * @memberof InstanceDetailOut
+     */
+    'status': InstanceStatus;
+    /**
+     * 
+     * @type {KnowledgeBaseOut}
+     * @memberof InstanceDetailOut
+     */
+    'kb'?: KnowledgeBaseOut | null;
+}
+
+
 /**
  * 
  * @export
@@ -270,10 +419,31 @@ export interface InstanceOut {
 export const InstanceStatus = {
     Active: 'active',
     Paused: 'paused',
-    NotEnoughBalance: 'not_enough_balance'
+    NotEnoughBalance: 'not_enough_balance',
+    Provisioning: 'provisioning',
+    Inactive: 'inactive',
+    Updating: 'updating',
+    Deleting: 'deleting',
+    Error: 'error',
+    Unknown: 'unknown'
 } as const;
 
 export type InstanceStatus = typeof InstanceStatus[keyof typeof InstanceStatus];
+
+
+/**
+ * 
+ * @export
+ * @interface InstanceStatusUpdate
+ */
+export interface InstanceStatusUpdate {
+    /**
+     * 
+     * @type {InstanceStatus}
+     * @memberof InstanceStatusUpdate
+     */
+    'status': InstanceStatus;
+}
 
 
 /**
@@ -303,6 +473,191 @@ export interface InstanceUpdate {
 }
 
 
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const KBDataType = {
+    Document: 'document',
+    Video: 'video'
+} as const;
+
+export type KBDataType = typeof KBDataType[keyof typeof KBDataType];
+
+
+/**
+ * 
+ * @export
+ * @interface KBEntryCreate
+ */
+export interface KBEntryCreate {
+    /**
+     * 
+     * @type {string}
+     * @memberof KBEntryCreate
+     */
+    'content': string;
+    /**
+     * 
+     * @type {KBDataType}
+     * @memberof KBEntryCreate
+     */
+    'data_type'?: KBDataType | null;
+    /**
+     * 
+     * @type {KBLangHint}
+     * @memberof KBEntryCreate
+     */
+    'lang_hint'?: KBLangHint | null;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface KBEntryOut
+ */
+export interface KBEntryOut {
+    /**
+     * 
+     * @type {number}
+     * @memberof KBEntryOut
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof KBEntryOut
+     */
+    'content': string;
+    /**
+     * 
+     * @type {KBDataType}
+     * @memberof KBEntryOut
+     */
+    'data_type': KBDataType;
+    /**
+     * 
+     * @type {KBLangHint}
+     * @memberof KBEntryOut
+     */
+    'lang_hint': KBLangHint;
+    /**
+     * 
+     * @type {KBEntryStatus}
+     * @memberof KBEntryOut
+     */
+    'status': KBEntryStatus;
+    /**
+     * 
+     * @type {string}
+     * @memberof KBEntryOut
+     */
+    'external_entry_id'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof KBEntryOut
+     */
+    'execution_id'?: string | null;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const KBEntryStatus = {
+    InProgress: 'in_progress',
+    Done: 'done',
+    Timeout: 'timeout',
+    Failed: 'failed'
+} as const;
+
+export type KBEntryStatus = typeof KBEntryStatus[keyof typeof KBEntryStatus];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const KBLangHint = {
+    Ru: 'ru',
+    En: 'en',
+    Uk: 'uk',
+    Tr: 'tr',
+    De: 'de',
+    Fr: 'fr',
+    Es: 'es',
+    It: 'it',
+    Pt: 'pt',
+    Pl: 'pl',
+    Kk: 'kk',
+    Uz: 'uz',
+    Az: 'az',
+    Ka: 'ka',
+    Ro: 'ro',
+    Nl: 'nl',
+    Sv: 'sv',
+    No: 'no',
+    Da: 'da',
+    Fi: 'fi',
+    Cs: 'cs',
+    Sk: 'sk',
+    Bg: 'bg',
+    Sr: 'sr',
+    Hr: 'hr',
+    Sl: 'sl',
+    Et: 'et',
+    Lt: 'lt',
+    Lv: 'lv',
+    El: 'el',
+    He: 'he',
+    Ar: 'ar',
+    Fa: 'fa',
+    Hi: 'hi',
+    Ur: 'ur',
+    Bn: 'bn',
+    Ta: 'ta',
+    Te: 'te',
+    Ml: 'ml',
+    Id: 'id',
+    Ms: 'ms',
+    Th: 'th',
+    Vi: 'vi',
+    Zh: 'zh',
+    Ja: 'ja',
+    Ko: 'ko'
+} as const;
+
+export type KBLangHint = typeof KBLangHint[keyof typeof KBLangHint];
+
+
+/**
+ * 
+ * @export
+ * @interface KnowledgeBaseOut
+ */
+export interface KnowledgeBaseOut {
+    /**
+     * 
+     * @type {number}
+     * @memberof KnowledgeBaseOut
+     */
+    'id': number;
+    /**
+     * 
+     * @type {Array<KBEntryOut>}
+     * @memberof KnowledgeBaseOut
+     */
+    'entries'?: Array<KBEntryOut>;
+}
 /**
  * 
  * @export
@@ -403,6 +758,119 @@ export interface ResetPasswordIn {
      * @memberof ResetPasswordIn
      */
     'new_password': string;
+}
+/**
+ * 
+ * @export
+ * @interface StatusEventOut
+ */
+export interface StatusEventOut {
+    /**
+     * 
+     * @type {number}
+     * @memberof StatusEventOut
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusEventOut
+     */
+    'changed_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusEventOut
+     */
+    'from_status': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusEventOut
+     */
+    'to_status': string;
+}
+/**
+ * 
+ * @export
+ * @interface StatusSegmentOut
+ */
+export interface StatusSegmentOut {
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusSegmentOut
+     */
+    'start': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusSegmentOut
+     */
+    'end': string;
+    /**
+     * 
+     * @type {InstanceStatus}
+     * @memberof StatusSegmentOut
+     */
+    'status': InstanceStatus;
+    /**
+     * 
+     * @type {number}
+     * @memberof StatusSegmentOut
+     */
+    'seconds': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface StatusStatsOut
+ */
+export interface StatusStatsOut {
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusStatsOut
+     */
+    'window_start': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StatusStatsOut
+     */
+    'window_end': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof StatusStatsOut
+     */
+    'total_seconds': number;
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof StatusStatsOut
+     */
+    'seconds_by_status': { [key: string]: number; };
+    /**
+     * 
+     * @type {number}
+     * @memberof StatusStatsOut
+     */
+    'uptime_seconds': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof StatusStatsOut
+     */
+    'uptime_percent': number;
+    /**
+     * 
+     * @type {Array<StatusSegmentOut>}
+     * @memberof StatusStatsOut
+     */
+    'segments'?: Array<StatusSegmentOut> | null;
 }
 /**
  * 
@@ -1912,6 +2380,231 @@ export const InstancesApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
+         * @summary Get Instance Stats
+         * @param {number} iid 
+         * @param {string} from 
+         * @param {string} to 
+         * @param {boolean} [includeSegments] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInstanceStatsInstancesIidStatsGet: async (iid: number, from: string, to: string, includeSegments?: boolean, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'iid' is not null or undefined
+            assertParamExists('getInstanceStatsInstancesIidStatsGet', 'iid', iid)
+            // verify required parameter 'from' is not null or undefined
+            assertParamExists('getInstanceStatsInstancesIidStatsGet', 'from', from)
+            // verify required parameter 'to' is not null or undefined
+            assertParamExists('getInstanceStatsInstancesIidStatsGet', 'to', to)
+            const localVarPath = `/instances/{iid}/stats`
+                .replace(`{${"iid"}}`, encodeURIComponent(String(iid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = (from as any instanceof Date) ?
+                    (from as any).toISOString() :
+                    from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = (to as any instanceof Date) ?
+                    (to as any).toISOString() :
+                    to;
+            }
+
+            if (includeSegments !== undefined) {
+                localVarQueryParameter['include_segments'] = includeSegments;
+            }
+
+
+    
+            if (xSessionToken != null) {
+                localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
+            }
+            if (xRefreshToken != null) {
+                localVarHeaderParameter['X-Refresh-Token'] = String(xRefreshToken);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get Status Events
+         * @param {number} iid 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [from] 
+         * @param {string | null} [to] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatusEventsInstancesIidStatusEventsGet: async (iid: number, limit?: number, offset?: number, from?: string | null, to?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'iid' is not null or undefined
+            assertParamExists('getStatusEventsInstancesIidStatusEventsGet', 'iid', iid)
+            const localVarPath = `/instances/{iid}/status-events`
+                .replace(`{${"iid"}}`, encodeURIComponent(String(iid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = (from as any instanceof Date) ?
+                    (from as any).toISOString() :
+                    from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = (to as any instanceof Date) ?
+                    (to as any).toISOString() :
+                    to;
+            }
+
+
+    
+            if (xSessionToken != null) {
+                localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
+            }
+            if (xRefreshToken != null) {
+                localVarHeaderParameter['X-Refresh-Token'] = String(xRefreshToken);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Kb Add Entry
+         * @param {number} iid 
+         * @param {KBEntryCreate} kBEntryCreate 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        kbAddEntryInstancesIidKbEntriesPost: async (iid: number, kBEntryCreate: KBEntryCreate, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'iid' is not null or undefined
+            assertParamExists('kbAddEntryInstancesIidKbEntriesPost', 'iid', iid)
+            // verify required parameter 'kBEntryCreate' is not null or undefined
+            assertParamExists('kbAddEntryInstancesIidKbEntriesPost', 'kBEntryCreate', kBEntryCreate)
+            const localVarPath = `/instances/{iid}/kb/entries`
+                .replace(`{${"iid"}}`, encodeURIComponent(String(iid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            if (xSessionToken != null) {
+                localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
+            }
+            if (xRefreshToken != null) {
+                localVarHeaderParameter['X-Refresh-Token'] = String(xRefreshToken);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(kBEntryCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Kb Delete Entry Route
+         * @param {number} iid 
+         * @param {number} entryId 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete: async (iid: number, entryId: number, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'iid' is not null or undefined
+            assertParamExists('kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete', 'iid', iid)
+            // verify required parameter 'entryId' is not null or undefined
+            assertParamExists('kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete', 'entryId', entryId)
+            const localVarPath = `/instances/{iid}/kb/entries/{entry_id}`
+                .replace(`{${"iid"}}`, encodeURIComponent(String(iid)))
+                .replace(`{${"entry_id"}}`, encodeURIComponent(String(entryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            if (xSessionToken != null) {
+                localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
+            }
+            if (xRefreshToken != null) {
+                localVarHeaderParameter['X-Refresh-Token'] = String(xRefreshToken);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary List Instances
          * @param {string | null} [xSessionToken] 
          * @param {string | null} [xRefreshToken] 
@@ -1950,17 +2643,21 @@ export const InstancesApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * 
-         * @summary Pause Instance
+         * @summary Set Instance Status
          * @param {number} iid 
+         * @param {InstanceStatusUpdate} instanceStatusUpdate 
+         * @param {string | null} [xAdminToken] 
          * @param {string | null} [xSessionToken] 
          * @param {string | null} [xRefreshToken] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        pauseInstanceInstancesIidPausePatch: async (iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        setInstanceStatusInstancesIidStatusPatch: async (iid: number, instanceStatusUpdate: InstanceStatusUpdate, xAdminToken?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'iid' is not null or undefined
-            assertParamExists('pauseInstanceInstancesIidPausePatch', 'iid', iid)
-            const localVarPath = `/instances/{iid}/pause`
+            assertParamExists('setInstanceStatusInstancesIidStatusPatch', 'iid', iid)
+            // verify required parameter 'instanceStatusUpdate' is not null or undefined
+            assertParamExists('setInstanceStatusInstancesIidStatusPatch', 'instanceStatusUpdate', instanceStatusUpdate)
+            const localVarPath = `/instances/{iid}/status`
                 .replace(`{${"iid"}}`, encodeURIComponent(String(iid)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1975,6 +2672,11 @@ export const InstancesApiAxiosParamCreator = function (configuration?: Configura
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            if (xAdminToken != null) {
+                localVarHeaderParameter['X-Admin-Token'] = String(xAdminToken);
+            }
             if (xSessionToken != null) {
                 localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
             }
@@ -1984,48 +2686,7 @@ export const InstancesApiAxiosParamCreator = function (configuration?: Configura
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Resume Instance
-         * @param {number} iid 
-         * @param {string | null} [xSessionToken] 
-         * @param {string | null} [xRefreshToken] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        resumeInstanceInstancesIidResumePatch: async (iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'iid' is not null or undefined
-            assertParamExists('resumeInstanceInstancesIidResumePatch', 'iid', iid)
-            const localVarPath = `/instances/{iid}/resume`
-                .replace(`{${"iid"}}`, encodeURIComponent(String(iid)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            if (xSessionToken != null) {
-                localVarHeaderParameter['X-Session-Token'] = String(xSessionToken);
-            }
-            if (xRefreshToken != null) {
-                localVarHeaderParameter['X-Refresh-Token'] = String(xRefreshToken);
-            }
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(instanceStatusUpdate, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2129,10 +2790,79 @@ export const InstancesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getInstanceInstancesIidGet(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InstanceOut>> {
+        async getInstanceInstancesIidGet(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InstanceDetailOut>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getInstanceInstancesIidGet(iid, xSessionToken, xRefreshToken, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['InstancesApi.getInstanceInstancesIidGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get Instance Stats
+         * @param {number} iid 
+         * @param {string} from 
+         * @param {string} to 
+         * @param {boolean} [includeSegments] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getInstanceStatsInstancesIidStatsGet(iid: number, from: string, to: string, includeSegments?: boolean, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatusStatsOut>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstanceStatsInstancesIidStatsGet(iid, from, to, includeSegments, xSessionToken, xRefreshToken, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['InstancesApi.getInstanceStatsInstancesIidStatsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get Status Events
+         * @param {number} iid 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [from] 
+         * @param {string | null} [to] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStatusEventsInstancesIidStatusEventsGet(iid: number, limit?: number, offset?: number, from?: string | null, to?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<StatusEventOut>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatusEventsInstancesIidStatusEventsGet(iid, limit, offset, from, to, xSessionToken, xRefreshToken, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['InstancesApi.getStatusEventsInstancesIidStatusEventsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Kb Add Entry
+         * @param {number} iid 
+         * @param {KBEntryCreate} kBEntryCreate 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async kbAddEntryInstancesIidKbEntriesPost(iid: number, kBEntryCreate: KBEntryCreate, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<KBEntryOut>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.kbAddEntryInstancesIidKbEntriesPost(iid, kBEntryCreate, xSessionToken, xRefreshToken, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['InstancesApi.kbAddEntryInstancesIidKbEntriesPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Kb Delete Entry Route
+         * @param {number} iid 
+         * @param {number} entryId 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid: number, entryId: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid, entryId, xSessionToken, xRefreshToken, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['InstancesApi.kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2151,32 +2881,19 @@ export const InstancesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Pause Instance
+         * @summary Set Instance Status
          * @param {number} iid 
+         * @param {InstanceStatusUpdate} instanceStatusUpdate 
+         * @param {string | null} [xAdminToken] 
          * @param {string | null} [xSessionToken] 
          * @param {string | null} [xRefreshToken] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async pauseInstanceInstancesIidPausePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InstanceOut>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.pauseInstanceInstancesIidPausePatch(iid, xSessionToken, xRefreshToken, options);
+        async setInstanceStatusInstancesIidStatusPatch(iid: number, instanceStatusUpdate: InstanceStatusUpdate, xAdminToken?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InstanceOut>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setInstanceStatusInstancesIidStatusPatch(iid, instanceStatusUpdate, xAdminToken, xSessionToken, xRefreshToken, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['InstancesApi.pauseInstanceInstancesIidPausePatch']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Resume Instance
-         * @param {number} iid 
-         * @param {string | null} [xSessionToken] 
-         * @param {string | null} [xRefreshToken] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async resumeInstanceInstancesIidResumePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InstanceOut>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.resumeInstanceInstancesIidResumePatch(iid, xSessionToken, xRefreshToken, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['InstancesApi.resumeInstanceInstancesIidResumePatch']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['InstancesApi.setInstanceStatusInstancesIidStatusPatch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2238,8 +2955,65 @@ export const InstancesApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstanceInstancesIidGet(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<InstanceOut> {
+        getInstanceInstancesIidGet(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<InstanceDetailOut> {
             return localVarFp.getInstanceInstancesIidGet(iid, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get Instance Stats
+         * @param {number} iid 
+         * @param {string} from 
+         * @param {string} to 
+         * @param {boolean} [includeSegments] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInstanceStatsInstancesIidStatsGet(iid: number, from: string, to: string, includeSegments?: boolean, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<StatusStatsOut> {
+            return localVarFp.getInstanceStatsInstancesIidStatsGet(iid, from, to, includeSegments, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get Status Events
+         * @param {number} iid 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
+         * @param {string | null} [from] 
+         * @param {string | null} [to] 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatusEventsInstancesIidStatusEventsGet(iid: number, limit?: number, offset?: number, from?: string | null, to?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<Array<StatusEventOut>> {
+            return localVarFp.getStatusEventsInstancesIidStatusEventsGet(iid, limit, offset, from, to, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Kb Add Entry
+         * @param {number} iid 
+         * @param {KBEntryCreate} kBEntryCreate 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        kbAddEntryInstancesIidKbEntriesPost(iid: number, kBEntryCreate: KBEntryCreate, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<KBEntryOut> {
+            return localVarFp.kbAddEntryInstancesIidKbEntriesPost(iid, kBEntryCreate, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Kb Delete Entry Route
+         * @param {number} iid 
+         * @param {number} entryId 
+         * @param {string | null} [xSessionToken] 
+         * @param {string | null} [xRefreshToken] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid: number, entryId: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<any> {
+            return localVarFp.kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid, entryId, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2254,27 +3028,17 @@ export const InstancesApiFactory = function (configuration?: Configuration, base
         },
         /**
          * 
-         * @summary Pause Instance
+         * @summary Set Instance Status
          * @param {number} iid 
+         * @param {InstanceStatusUpdate} instanceStatusUpdate 
+         * @param {string | null} [xAdminToken] 
          * @param {string | null} [xSessionToken] 
          * @param {string | null} [xRefreshToken] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        pauseInstanceInstancesIidPausePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<InstanceOut> {
-            return localVarFp.pauseInstanceInstancesIidPausePatch(iid, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Resume Instance
-         * @param {number} iid 
-         * @param {string | null} [xSessionToken] 
-         * @param {string | null} [xRefreshToken] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        resumeInstanceInstancesIidResumePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<InstanceOut> {
-            return localVarFp.resumeInstanceInstancesIidResumePatch(iid, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
+        setInstanceStatusInstancesIidStatusPatch(iid: number, instanceStatusUpdate: InstanceStatusUpdate, xAdminToken?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig): AxiosPromise<InstanceOut> {
+            return localVarFp.setInstanceStatusInstancesIidStatusPatch(iid, instanceStatusUpdate, xAdminToken, xSessionToken, xRefreshToken, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2343,6 +3107,71 @@ export class InstancesApi extends BaseAPI {
 
     /**
      * 
+     * @summary Get Instance Stats
+     * @param {number} iid 
+     * @param {string} from 
+     * @param {string} to 
+     * @param {boolean} [includeSegments] 
+     * @param {string | null} [xSessionToken] 
+     * @param {string | null} [xRefreshToken] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof InstancesApi
+     */
+    public getInstanceStatsInstancesIidStatsGet(iid: number, from: string, to: string, includeSegments?: boolean, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
+        return InstancesApiFp(this.configuration).getInstanceStatsInstancesIidStatsGet(iid, from, to, includeSegments, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get Status Events
+     * @param {number} iid 
+     * @param {number} [limit] 
+     * @param {number} [offset] 
+     * @param {string | null} [from] 
+     * @param {string | null} [to] 
+     * @param {string | null} [xSessionToken] 
+     * @param {string | null} [xRefreshToken] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof InstancesApi
+     */
+    public getStatusEventsInstancesIidStatusEventsGet(iid: number, limit?: number, offset?: number, from?: string | null, to?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
+        return InstancesApiFp(this.configuration).getStatusEventsInstancesIidStatusEventsGet(iid, limit, offset, from, to, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Kb Add Entry
+     * @param {number} iid 
+     * @param {KBEntryCreate} kBEntryCreate 
+     * @param {string | null} [xSessionToken] 
+     * @param {string | null} [xRefreshToken] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof InstancesApi
+     */
+    public kbAddEntryInstancesIidKbEntriesPost(iid: number, kBEntryCreate: KBEntryCreate, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
+        return InstancesApiFp(this.configuration).kbAddEntryInstancesIidKbEntriesPost(iid, kBEntryCreate, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Kb Delete Entry Route
+     * @param {number} iid 
+     * @param {number} entryId 
+     * @param {string | null} [xSessionToken] 
+     * @param {string | null} [xRefreshToken] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof InstancesApi
+     */
+    public kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid: number, entryId: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
+        return InstancesApiFp(this.configuration).kbDeleteEntryRouteInstancesIidKbEntriesEntryIdDelete(iid, entryId, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary List Instances
      * @param {string | null} [xSessionToken] 
      * @param {string | null} [xRefreshToken] 
@@ -2356,30 +3185,18 @@ export class InstancesApi extends BaseAPI {
 
     /**
      * 
-     * @summary Pause Instance
+     * @summary Set Instance Status
      * @param {number} iid 
+     * @param {InstanceStatusUpdate} instanceStatusUpdate 
+     * @param {string | null} [xAdminToken] 
      * @param {string | null} [xSessionToken] 
      * @param {string | null} [xRefreshToken] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof InstancesApi
      */
-    public pauseInstanceInstancesIidPausePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
-        return InstancesApiFp(this.configuration).pauseInstanceInstancesIidPausePatch(iid, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Resume Instance
-     * @param {number} iid 
-     * @param {string | null} [xSessionToken] 
-     * @param {string | null} [xRefreshToken] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof InstancesApi
-     */
-    public resumeInstanceInstancesIidResumePatch(iid: number, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
-        return InstancesApiFp(this.configuration).resumeInstanceInstancesIidResumePatch(iid, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
+    public setInstanceStatusInstancesIidStatusPatch(iid: number, instanceStatusUpdate: InstanceStatusUpdate, xAdminToken?: string | null, xSessionToken?: string | null, xRefreshToken?: string | null, options?: RawAxiosRequestConfig) {
+        return InstancesApiFp(this.configuration).setInstanceStatusInstancesIidStatusPatch(iid, instanceStatusUpdate, xAdminToken, xSessionToken, xRefreshToken, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

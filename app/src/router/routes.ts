@@ -5,12 +5,22 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'main', component: () => import('pages/main/MainPage.vue') },
+      { path: '', redirect: '/profile' },
       { path: 'bots', name: 'bots', component: () => import('pages/main/BotsPage.vue') },
       {
         path: 'instances',
         name: 'instances',
         component: () => import('pages/main/InstancesPage.vue'),
+      },
+      {
+        path: 'instances/create-instance/:bot_id',
+        name: 'create-instance',
+        component: () => import('pages/main/CreateInstancePage.vue'),
+      },
+      {
+        path: 'instances/instance/:instance_id',
+        name: 'instance',
+        component: () => import('pages/main/InstancePage.vue'),
       },
       { path: 'profile', name: 'profile', component: () => import('pages/main/ProfilePage.vue') },
     ],

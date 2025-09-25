@@ -21,17 +21,17 @@ const emits = defineEmits(['click']);
 
 <style lang="scss" scoped>
 .fancy-btn {
-  color: #fff;
+  color: $font-inverse;
   width: fit-content;
   border-radius: 10px;
   background-color: $primary;
   font-size: var(--font-size-xs);
-  font-weight: 500;
+  font-weight: 600;
   width: var(--spacing-xl) !important;
 }
 
 .fancy-btn:hover {
-  background-color: #715488;
+  background-color: $primary-shade;
 }
 
 @media screen and (max-width: 576px) {

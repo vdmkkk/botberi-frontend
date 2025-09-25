@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpR fFf">
+  <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar class="toolbar" :class="$q.screen.xs ? 'justify-between' : 'justify-end'">
         <q-btn
@@ -20,7 +20,12 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" class="drawer bg-accent" show-if-above>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      class="drawer"
+      style="background-color: #242f3d !important"
+      show-if-above
+    >
       <div class="row drawer-title">
         <q-avatar square>
           <img :src="logo" />
@@ -45,7 +50,7 @@
               </a></q-tooltip
             >
             <q-item-section avatar>
-              <q-icon :name="menuItem.icon" />
+              <q-icon color="secondary" :name="menuItem.icon" />
             </q-item-section>
             <q-item-section>
               {{ menuItem.name }}
@@ -82,12 +87,6 @@ const leftDrawerOpen = ref(false);
 
 const links = computed(() => [
   {
-    name: 'Главная',
-    to: '/',
-    icon: 'dashboard',
-    disabled: false,
-  },
-  {
     name: 'Витрина',
     to: '/bots',
     icon: 'storefront',
@@ -99,6 +98,12 @@ const links = computed(() => [
     icon: 'smart_toy',
     disabled: false,
   },
+  // {
+  //   name: 'База знаний',
+  //   to: '/knowledge-base',
+  //   icon: 'bookmark',
+  //   disabled: false,
+  // },
   {
     name: 'Профиль',
     to: '/profile',
@@ -107,7 +112,7 @@ const links = computed(() => [
   },
   {
     name: 'Служба заботы',
-    to: 'https://t.me/puls_smm_support',
+    to: 'https://t.me/ALEKSANDERGORIN',
     icon: 'contact_support',
     disabled: false,
   },
@@ -155,12 +160,15 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .toolbar {
-  background-color: $foreground;
+  background-color: $foreground-accent;
+}
+
+.q-drawer {
+  display: none;
+  background: $foreground !important;
 }
 
 .drawer {
-  background-color: $accent;
-
   .drawer-title {
     img {
       height: var(--font-size-lg) !important;
@@ -172,7 +180,7 @@ onMounted(() => {
       margin-top: auto;
       margin-bottom: auto;
       font-weight: 400;
-      color: white;
+      color: $font;
     }
 
     margin-left: 10%;
@@ -187,6 +195,11 @@ onMounted(() => {
     margin-top: var(--spacing-xxs);
     border-radius: 10px;
     font-weight: 500;
+    color: $font;
+  }
+
+  .active {
+    background-color: $secondary-shade;
   }
 }
 

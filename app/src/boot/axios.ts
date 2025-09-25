@@ -47,8 +47,8 @@ function setTokens(session_token: string, refresh_token: string) {
   Cookies.set('refresh_token', refresh_token, COOKIE_OPTS);
 }
 function clearTokens() {
-  Cookies.remove('session_token');
-  Cookies.remove('refresh_token');
+  Cookies.remove('session_token', COOKIE_OPTS);
+  Cookies.remove('refresh_token', COOKIE_OPTS);
 }
 
 let isRefreshing = false;
@@ -67,19 +67,27 @@ async function doRefresh() {
 
   // IMPORTANT: do not use Set-Cookie; backend returns tokens in body
   // We call via the generated authApi's axios with explicit headers
-  const resp = await apiInstances.authApi.axios.post('/auth/refresh', null, {
-    headers: {
-      'X-Session-Token': session,
-      'X-Refresh-Token': refresh,
-    },
-  });
+  try {
+    const resp = await apiInstances.authApi.axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/auth/refresh`,
+      null,
+      {
+        headers: {
+          'X-Session-Token': session,
+          'X-Refresh-Token': refresh,
+        },
+      },
+    );
 
-  const { session_token, refresh_token } = resp.data || {};
-  if (!session_token || !refresh_token) {
-    throw new Error('Malformed refresh response');
+    const { session_token, refresh_token } = resp.data || {};
+    if (!session_token || !refresh_token) {
+      throw new Error('Malformed refresh response');
+    }
+
+    setTokens(session_token, refresh_token);
+  } catch {
+    clearTokens();
   }
-
-  setTokens(session_token, refresh_token);
 }
 
 Object.entries(apiInstances).forEach(([key, apiInstance]) => {
@@ -179,6 +187,8 @@ Object.entries(apiInstances).forEach(([key, apiInstance]) => {
             return (apiInstance.axios as AxiosInstance).request(originalRequest);
           })
           .catch((e) => {
+            Cookies.remove('refresh_token');
+            Cookies.remove('session_token');
             Notify.create({
               type: 'warning',
               position: 'top',
@@ -195,10 +205,7 @@ Object.entries(apiInstances).forEach(([key, apiInstance]) => {
           position: 'top',
           timeout: 5000,
           badgeStyle: { display: 'none' },
-          message:
-            error.response.data.detail[0].msg ||
-            error.response.data.detail ||
-            'Что-то пошло не так',
+          message: error.response.data.error_code || 'Что-то пошло не так',
         });
       }
 

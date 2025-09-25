@@ -1,11 +1,14 @@
 <template>
-  <div class="container">
+  <div v-if="!loading" class="container">
     <BotComponent
       v-for="bot in bots"
       :model-value="bot"
       :key="bot.id"
       @select-bot="handleSelectBot($event)"
     />
+  </div>
+  <div v-else class="container">
+    <q-spinner-ios class="loading" color="secondary" size="40px" />
   </div>
 </template>
 
@@ -36,3 +39,5 @@ onMounted(() => {
     });
 });
 </script>
+
+<style lang="scss" scoped></style>

@@ -2,7 +2,7 @@
 .q-tooltip {
   width: 200px;
   a {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -13,6 +13,10 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
+  padding-left: var(--spacing-sm);
+  // padding-right: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
 }
 
 @media screen and (max-width: 576px) {
@@ -21,4 +25,15 @@
       font-size: var(--font-size-xs);
     }
   }
+
+  .container {
+    padding-left: 0 !important;
+  }
+}
+
+@import url('https://code.highcharts.com/css/highcharts.css');
+
+:root {
+  --highcharts-background-color: #242f3d !important;
+  --highcharts-color-0: rgba(137, 191, 225, 1);
 }

@@ -79,6 +79,10 @@ onMounted(() => {
   color: $font !important;
 }
 
+.q-input ::v-deep .q-field__label {
+  color: $font;
+}
+
 .has-voice ::v-deep .q-field__native {
   padding-right: 30px;
 }
