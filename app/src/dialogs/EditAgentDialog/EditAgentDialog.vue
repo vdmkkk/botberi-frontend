@@ -28,9 +28,11 @@ import Button from 'src/components/Button.vue';
 import Dialog from 'src/components/Dialog.vue';
 import Input from 'src/components/Input.vue';
 import { ref, useTemplateRef } from 'vue';
+import OzonReviewsBotVars from 'src/components/bots-vars/OzonReviewsBot.vars.vue';
 
 const varsComponents = {
   '1': WBReviewsBotVars,
+  '2': OzonReviewsBotVars,
 };
 
 const dialogRef = useTemplateRef('dialogRef');

@@ -29,9 +29,11 @@ import Input from 'src/components/Input.vue';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+import OzonReviewsBotVars from 'src/components/bots-vars/OzonReviewsBot.vars.vue';
 
 const varsComponents = {
   '1': WBReviewsBotVars,
+  '2': OzonReviewsBotVars,
 };
 
 const route = useRoute();

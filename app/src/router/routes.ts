@@ -41,8 +41,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/auth/ChangePasswordFormPage.vue'),
       },
       {
-        path: 'change-password/:access_token',
-        name: 'change-password-confirm',
+        path: 'reset-password/:access_token',
+        name: 'reset-password-confirm',
         component: () => import('pages/auth/ChangePasswordConfirmPage.vue'),
       },
     ],
