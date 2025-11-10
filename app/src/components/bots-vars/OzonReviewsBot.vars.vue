@@ -2,7 +2,7 @@
   <div class="column fields">
     <Input
       v-model="vars.telegram_bot_api_key"
-      label="create_agent.telegram_api_key"
+      :label="$t('create_agent.telegram_api_key')"
       :rules="[(val) => (val && val.length > 0) || $t('errors.required')]"
     />
   </div>

@@ -1,11 +1,13 @@
 <template>
   <div v-if="!loading" class="container">
-    <BotComponent
-      v-for="bot in bots"
-      :model-value="bot"
-      :key="bot.id"
-      @select-bot="handleSelectBot($event)"
-    />
+    <div class="row bots-list">
+      <BotComponent
+        v-for="bot in bots"
+        :model-value="bot"
+        :key="bot.id"
+        @select-bot="handleSelectBot($event)"
+      />
+    </div>
   </div>
   <div v-else class="container">
     <q-spinner-ios class="loading" color="secondary" size="40px" />
@@ -40,4 +42,8 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.bots-list {
+  gap: var(--spacing-sm);
+}
+</style>

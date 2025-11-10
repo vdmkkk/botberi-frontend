@@ -70,6 +70,7 @@
 import { useCookie } from 'src/composables/useCookie';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import logo from 'src/assets/icons/logo.png';
 
 const router = useRouter();
 

@@ -7,6 +7,12 @@ export type MessageLanguages = keyof typeof messages;
 // Type-define 'en-US' as the master schema for the resource
 export type MessageSchema = (typeof messages)['en-US'];
 
+// Expose i18n instance to non-component code (e.g., axios interceptors)
+let i18nInstance: any = null;
+export function getI18n() {
+  return i18nInstance as any;
+}
+
 // See https://vue-i18n.intlify.dev/guide/advanced/typescript.html#global-resource-schema-type-definition
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 declare module 'vue-i18n' {
@@ -23,11 +29,12 @@ declare module 'vue-i18n' {
 
 export default defineBoot(({ app }) => {
   const i18n = createI18n<{ message: MessageSchema }, MessageLanguages>({
-    locale: 'en-US',
+    locale: 'ru-RU',
     legacy: false,
     messages,
   });
 
+  i18nInstance = i18n;
   // Set i18n instance on app
   app.use(i18n);
 });

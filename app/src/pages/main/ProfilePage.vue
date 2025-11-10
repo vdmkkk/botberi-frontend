@@ -30,7 +30,7 @@
           <p>{{ me?.phone }}</p>
           <p v-if="me?.telegram">{{ me.telegram }}</p>
         </div>
-        <div class="column">
+        <div class="column q-mt-md">
           <SecondaryButton label="Сменить пароль" @click="handleChangePassword" />
           <SecondaryButton
             class="edit-btn"

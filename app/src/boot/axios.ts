@@ -5,6 +5,7 @@ import { AuthApi, Configuration, BotsApi, InstancesApi, UsersApi } from 'src/api
 import { PaymentApi } from 'src/api';
 import { Notify } from 'quasar';
 import { Cookies } from 'quasar';
+import { getI18n } from 'src/boot/i18n';
 declare module 'vue' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -200,12 +201,17 @@ Object.entries(apiInstances).forEach(([key, apiInstance]) => {
           });
       } else if (error.response) {
         console.log(error.response);
+        const code = error.response?.data?.error_code;
+        const i18n = getI18n();
+        const translated =
+          (code && i18n?.global?.t?.(`errors.api.${code}` as any)) ||
+          i18n?.global?.t?.('errors.unknown' as any);
         Notify.create({
           type: 'negative',
           position: 'top',
           timeout: 5000,
           badgeStyle: { display: 'none' },
-          message: error.response.data.error_code || 'Что-то пошло не так',
+          message: translated || code || 'Что-то пошло не так',
         });
       }
 
