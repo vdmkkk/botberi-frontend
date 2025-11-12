@@ -3,7 +3,13 @@
     ><div class="column">
       <p class="title">Добавить запись</p>
       <q-form @submit="handleSubmit" class="column">
-        <input ref="inputRef" type="file" accept=".pdf" style="display: none" @change="onChange" />
+        <input
+          ref="inputRef"
+          type="file"
+          accept=".pdf,.xls,.xlsx,.doc,.docx"
+          style="display: none"
+          @change="onChange"
+        />
         <Select class="selector" v-model="type" :options="options" map-options />
         <Select class="selector" v-model="lang" :options="langOptions" map-options />
         <Input
